@@ -1,0 +1,18 @@
+[package]
+name = "hyperx-battery"
+version = "0.1.0"
+edition = "2021"
+description = "Linux system tray battery monitor for HyperX Cloud Flight Wireless headsets"
+authors = ["Abdul Walid"]
+license = "MIT"
+
+[[bin]]
+name = "hyperx-battery"
+path = "src/main.rs"
+
+[dependencies]
+hidapi = { version = "2.6.7", default-features = false, features = ["linux-native-basic-udev"] }
+ksni = "=0.3.6"
+notify-rust = "4.11.5"
+tokio = { version = "1.43.0", features = ["macros", "rt-multi-thread", "time", "sync", "signal"] }
+thiserror = "2.0.11"

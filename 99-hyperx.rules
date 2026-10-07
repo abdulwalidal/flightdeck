@@ -1,0 +1,6 @@
+# HyperX Cloud Flight Wireless USB Dongle permissions
+# Allows non-root read/write access to HID raw devices
+
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="0951", ATTRS{idProduct}=="1723", MODE="0666"
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="0951", ATTRS{idProduct}=="1724", MODE="0666"
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="0951", ATTRS{idProduct}=="16c4", MODE="0666"
