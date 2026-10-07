@@ -8,16 +8,18 @@ A lightweight Linux system tray application written in Rust that reads battery a
 
 - **System Tray Display**: Displays live headset connection and battery percentage in your status bar.
 - **Charging Indicator**: Displays lightning bolt icon (`⚡`) when charging.
+- **Event-Driven Architecture**: The Cloud Flight dongle pushes unsolicited HID reports. The app listens for incoming status packets in real time instead of relying on a polling interval.
+- **Accurate Battery Decoding**: Decodes multi-tier battery states and raw values via reverse-engineered voltage lookup tables.
 - **Desktop Notifications**:
   - Warns when battery drops to $\le 20\%$ (`HyperX: Low battery (X%)`).
   - Alerts when battery reaches $100\%$ while charging (`HyperX: Fully charged`).
   - One-shot alerts that automatically reset when levels recover (prevents spam).
 - **Right-Click Context Menu**:
-  - **Refresh**: Instantly triggers an immediate headset poll.
+  - **Refresh**: Re-sends the bootstrap trigger to request an immediate headset update.
   - **Quit**: Exits the application cleanly.
 - **Crash-Proof Design**:
-  - Dongle unplugged? Shows `🎧 ✗` and continues polling every 30s.
-  - Headset off / out of range? Shows `🎧 --` and continues polling.
+  - Dongle unplugged? Shows `🎧 ✗` and automatically retries reconnecting in the background.
+  - Headset off / out of range? Shows `🎧 --`.
   - Errors logged quietly to `stderr`, never spamming the user with popups.
 - **Hardware Revision Support**:
   - Automatically queries primary Product ID `0x1723` and fallback revisions `0x1724` and `0x16c4`.

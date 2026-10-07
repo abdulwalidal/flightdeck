@@ -1,6 +1,6 @@
 use ksni::menu::StandardItem;
 use ksni::{MenuItem, ToolTip, Tray};
-use tokio::sync::mpsc::Sender;
+use std::sync::mpsc::Sender;
 
 /// Current state represented in the tray
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -80,7 +80,7 @@ impl Tray for HeadsetTray {
             StandardItem {
                 label: "Refresh".to_string(),
                 activate: Box::new(move |_| {
-                    let _ = refresh_tx.try_send(());
+                    let _ = refresh_tx.send(());
                 }),
                 ..Default::default()
             }
@@ -100,11 +100,11 @@ impl Tray for HeadsetTray {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tokio::sync::mpsc;
+    use std::sync::mpsc;
 
     #[test]
     fn test_tray_labels_per_spec() {
-        let (tx, _rx) = mpsc::channel(1);
+        let (tx, _rx) = mpsc::channel();
         let mut tray = HeadsetTray::new(tx);
 
         tray.status = TrayStatus::Connected {
