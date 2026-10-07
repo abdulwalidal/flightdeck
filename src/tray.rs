@@ -26,6 +26,8 @@ impl HeadsetTray {
 }
 
 impl Tray for HeadsetTray {
+    const MENU_ON_ACTIVATE: bool = true;
+
     fn id(&self) -> String {
         "hyperx-battery".to_string()
     }
@@ -76,7 +78,26 @@ impl Tray for HeadsetTray {
     fn menu(&self) -> Vec<MenuItem<Self>> {
         let refresh_tx = self.refresh_tx.clone();
 
+        let status_label = match &self.status {
+            TrayStatus::Connected { battery, charging } => {
+                if *charging {
+                    format!("🎧 HyperX Cloud Flight: {battery}% ⚡")
+                } else {
+                    format!("🎧 HyperX Cloud Flight: {battery}%")
+                }
+            }
+            TrayStatus::Disconnected => "🎧 HyperX Cloud Flight: Disconnected".to_string(),
+            TrayStatus::DongleNotFound => "🎧 HyperX Dongle: Not Found".to_string(),
+        };
+
         vec![
+            StandardItem {
+                label: status_label,
+                enabled: false,
+                ..Default::default()
+            }
+            .into(),
+            MenuItem::Separator,
             StandardItem {
                 label: "Refresh".to_string(),
                 activate: Box::new(move |_| {
