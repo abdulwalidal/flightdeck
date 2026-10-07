@@ -7,8 +7,8 @@ pub const HYPERX_VENDOR_ID: u16 = 0x0951;
 /// Supported Product IDs for Cloud Flight dongle revisions
 pub const SUPPORTED_PRODUCT_IDS: &[u16] = &[0x1723, 0x1724, 0x16c4];
 
-/// Target HID usage page and usage for the 20-byte status interface
-pub const STATUS_USAGE_PAGE: u16 = 0xff43;
+/// Target HID usage pages and usage for the 20-byte status interface
+pub const STATUS_USAGE_PAGES: &[u16] = &[0xff43, 0xff90];
 pub const STATUS_USAGE: u16 = 0x0303;
 
 /// Size of the bootstrap request packet
@@ -205,7 +205,7 @@ pub fn open_status_interface(debug: bool) -> Result<HidDevice, HidError> {
             }
 
             // Check for explicit status interface usage
-            if info.usage_page() == STATUS_USAGE_PAGE && info.usage() == STATUS_USAGE {
+            if STATUS_USAGE_PAGES.contains(&info.usage_page()) && info.usage() == STATUS_USAGE {
                 matched_device_path = Some(info.path().to_owned());
                 break;
             }
@@ -239,12 +239,12 @@ pub fn send_bootstrap(device: &HidDevice, debug: bool) {
         eprintln!("[DEBUG] Sending bootstrap trigger packet: {:02x?}", bootstrap);
     }
 
-    // Try feature report first, then write fallback
-    if let Err(e) = device.send_feature_report(&bootstrap) {
+    // Write to device directly (works across Linux hidraw backends)
+    if let Err(e) = device.write(&bootstrap) {
         if debug {
-            eprintln!("[DEBUG] send_feature_report bootstrap failed ({e}), trying write()");
+            eprintln!("[DEBUG] write() failed ({e}), trying send_feature_report()");
         }
-        let _ = device.write(&bootstrap);
+        let _ = device.send_feature_report(&bootstrap);
     }
 }
 
